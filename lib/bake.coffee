@@ -15,5 +15,6 @@ app.use express.compiler { src:"#{STATIC}", enable: ['less'] }
 app.get '/', (request, response) ->
   response.render 'index', foo: 'bar'
 
-app.listen 1123
+port = process.env.PORT or 1123
+app.listen port
 console.log "Server running on port #{app.address().port}"
