@@ -7,7 +7,9 @@
     "less" : "1.1.x",
     "coffee-script" : "1.1.x",
     "coffeekup" : "0.3.x",
-    "mongoose" : "2.3.x"
+    "mongoose" : "2.3.x",
+    "canvas" : "0.8.x",
+    "request" : "2.1.x"
   },
   "engine": "node >= 0.4.1"
 }
