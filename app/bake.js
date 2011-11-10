@@ -1,14 +1,10 @@
 (function() {
-  var Canvas, Image, ONEWEEK, STATIC, app, canvas, ctx, express, fs, githubify, gpluscontent, gplusimage, picasafy, port, request, url;
+  var ONEWEEK, STATIC, app, express, fs, githubify, gpluscontent, gplusimage, picasafy, port, request, url;
   express = require('express');
   app = express.createServer();
   fs = require('fs');
   url = require('url');
   request = require('request');
-  Canvas = require('canvas');
-  Image = Canvas.Image;
-  canvas = new Canvas;
-  ctx = canvas.getContext('2d');
   ONEWEEK = 2629743000;
   STATIC = "" + (process.cwd()) + "/app/public";
   app.configure(function() {

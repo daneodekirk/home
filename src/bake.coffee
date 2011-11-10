@@ -4,11 +4,6 @@ fs = require 'fs'
 
 url = require 'url'
 request = require 'request'
-Canvas = require 'canvas'
-Image = Canvas.Image
-
-canvas = new Canvas
-ctx = canvas.getContext '2d'
 
 ONEWEEK = 2629743000
 STATIC = "#{process.cwd()}/app/public"

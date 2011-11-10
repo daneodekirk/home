@@ -50,7 +50,7 @@ html ->
             $.getJSON '/me', (data) -> 
               ( $(el).prepend "<a href='#{data[index].url}' data-content='#{data[index].content}'><img src='#{data[index].src}' /></a>" if data[index]) for el,index in $('.me')
 
-              $('#me a').popover placement:'below',html:true,animate:false
+              $('#me a').popover placement:'left',html:true,animate:false
 
             $('#art').mouseenter (e) ->
               return if $(this).hasClass 'span16'
