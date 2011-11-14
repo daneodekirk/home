@@ -22,28 +22,40 @@ app.get '/', (request, response) ->
   response.render 'index'
 
 app.get '/canvas', (req, res) ->
-  url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110?alt=json&kind=photo'
+  url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
   request url, (err, data, body) ->
     json = JSON.parse body
+    #links =  ( picasafy entry.media$group.media$content[0] for entry in json.feed.entry )
     links =  ( picasafy entry.content.src for entry in json.feed.entry )
-    res.send JSON.stringify links 
+    res.send JSON.stringify links
 
 app.get '/code', (req, res) ->
+  lastrepo = ''
   url = 'https://github.com/daneodekirk.json'
   request url, (err, data, body) ->
     json = JSON.parse body
-    res.send JSON.stringify ( [ {msg:githubify(repo), type:repo.type, url:repo.url} ][0] for repo in json )
+    items = ( [ {
+      repo: repo.repository.name,
+      date:repo.repository.pushed_at,
+      msg:githubify(repo),
+      type:repo.type,
+      url:repo.url
+    } ][0] for repo,index in json )
+    res.send JSON.stringify items
      
 app.get '/me', (req, res) ->
   url = "https://www.googleapis.com/plus/v1/people/114871092135242691110/activities/public?key=#{process.env.GPLUS}"
-
   request url, (err, data, body) ->
     json = JSON.parse body
-    res.send JSON.stringify ( [ { url:item.url, src:gplusimage(item.object.attachments), content:gpluscontent(item)} ][0] for item in json.items)
+    res.send JSON.stringify ( [ {
+      url:item.url,
+      src:gplusimage(item.object.attachments),
+      content:gpluscontent(item)
+    } ][0] for item in json.items)
 
 picasafy = (url) ->
   new_url = url.split '/'
-  new_url[new_url.length - 1] = 's40-c/'
+  new_url[new_url.length - 1] = 's80/'
   new_url.join('/')
 
 githubify = (repo) ->
@@ -53,7 +65,7 @@ githubify = (repo) ->
   repo.repository.name
 
 gplusimage = (attachments) ->
-  return attachments[0].fullImage.url.replace 's0-d', 's40-c' if attachments[0]
+  return attachments[0].fullImage.url.replace 's0-d', 's80' if attachments[0]
 
 gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'

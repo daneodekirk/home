@@ -27,7 +27,7 @@
     return response.render('index');
   });
   app.get('/canvas', function(req, res) {
-    url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110?alt=json&kind=photo';
+    url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
     return request(url, function(err, data, body) {
       var entry, json, links;
       json = JSON.parse(body);
@@ -45,17 +45,21 @@
     });
   });
   app.get('/code', function(req, res) {
+    var lastrepo;
+    lastrepo = '';
     url = 'https://github.com/daneodekirk.json';
     return request(url, function(err, data, body) {
-      var json, repo;
+      var index, items, json, repo;
       json = JSON.parse(body);
-      return res.send(JSON.stringify((function() {
-        var _i, _len, _results;
+      items = (function() {
+        var _len, _results;
         _results = [];
-        for (_i = 0, _len = json.length; _i < _len; _i++) {
-          repo = json[_i];
+        for (index = 0, _len = json.length; index < _len; index++) {
+          repo = json[index];
           _results.push([
             {
+              repo: repo.repository.name,
+              date: repo.repository.pushed_at,
               msg: githubify(repo),
               type: repo.type,
               url: repo.url
@@ -63,7 +67,8 @@
           ][0]);
         }
         return _results;
-      })()));
+      })();
+      return res.send(JSON.stringify(items));
     });
   });
   app.get('/me', function(req, res) {
@@ -92,7 +97,7 @@
   picasafy = function(url) {
     var new_url;
     new_url = url.split('/');
-    new_url[new_url.length - 1] = 's40-c/';
+    new_url[new_url.length - 1] = 's80/';
     return new_url.join('/');
   };
   githubify = function(repo) {
@@ -109,7 +114,7 @@
   };
   gplusimage = function(attachments) {
     if (attachments[0]) {
-      return attachments[0].fullImage.url.replace('s0-d', 's40-c');
+      return attachments[0].fullImage.url.replace('s0-d', 's80');
     }
   };
   gpluscontent = function(item) {

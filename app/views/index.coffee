@@ -13,16 +13,17 @@ html ->
     div '.container', ->
       section ->
         div '.page-header', ->
-          h1 'Header'
+          h1 'header'
       section '#main', ->
         div '.row', ->
           div '#art.span-one-third', ->
             h3 -> "art"
-            (span class:'canvas') for number in [1..16]
+            div '.wrapper', ->
+              (span class:'canvas') for number in [1..16]
 
           div '#code.span-one-third', ->
             h3 -> "code"
-            (p class:'code well') for number in [1..5]
+            (p class:'code') for number in [1..5]
 
           div '#me.span-one-third', ->
             h3 -> "me"
@@ -42,28 +43,35 @@ html ->
           'http://twitter.github.com/bootstrap/1.4.0/bootstrap-popover.js'
         ], ->
           jQuery ($) ->
+            name = ''
 
             $.getJSON '/canvas', (data) -> ( $(el).prepend "<img src='#{data[index]}'/>" if data[index] ) for el,index in $('.canvas')
 
-            $.getJSON '/code', (data) -> ( $(el).prepend "<span class='#{data[index].type}'><a href=#{data[index].url}>#{data[index].msg}</a></span>" ) for el,index in $('.code')
+            $.getJSON '/code', (data) -> ( $(el).prepend "<span class='#{data[index].type}'>
+                                                            <h5>#{data[index].repo}</h5>
+                                                            <a href=#{data[index].url}>#{data[index].msg}</a>
+                                                            <span class='help-block'>#{data[index].date}</h5>
+                                                          </span>" ) for el,index in $('.code')
 
-            $.getJSON '/me', (data) -> 
-              ( $(el).prepend "<a href='#{data[index].url}' data-content='#{data[index].content}'><img src='#{data[index].src}' /></a>" if data[index]) for el,index in $('.me')
+            $.getJSON '/me', (data) ->
+              ( $(el).prepend "<a href='#{data[index].url}' data-content='#{data[index].content}'>
+                                <img src='#{data[index].src}' />
+                              </a>" if data[index]) for el,index in $('.me')
 
-              $('#me a').popover placement:'left',html:true,animate:false
+              $('#me a').popover placement:'below',html:true,animate:false
 
-            $('#art').mouseenter (e) ->
-              return if $(this).hasClass 'span16'
-              $(this).toggleClass 'span-one-third span16'
-              $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150'
-              
-              $('#main').mouseleave (e) ->
-                $('#art').toggleClass 'span-one-third span16'
-                $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
-                $(this).unbind 'mouseleave'
+            #$('#art').mouseenter (e) ->
+            #  return if $(this).hasClass 'span16'
+            #  $(this).toggleClass 'span-one-third span16'
+            #  $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's80', 's150'
+            #  
+            #  $('#main').mouseleave (e) ->
+            #    $('#art').toggleClass 'span-one-third span16'
+            #    $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's80'
+            #    $(this).unbind 'mouseleave'
 
 
 
-            $('#art').one 'mouseenter', () ->
-              #LazyLoad.load 'https://raw.github.com/desandro/masonry/master/jquery.masonry.min.js', ->
-                #$('#art').masonry itemSelector:'img', isAnimated:true
+            #$('#art').one 'mouseenter', () ->
+            #  LazyLoad.load 'https://raw.github.com/desandro/masonry/master/jquery.masonry.min.js', ->
+            #    $('#art').masonry itemSelector:'.canvas', isAnimated:true, columnWidth:1, gutterWidth:0

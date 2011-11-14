@@ -4,3 +4,7 @@ body {
 img {
   padding:5px;
 }
+
+#art .wrapper {
+  width: 300px;
+}
