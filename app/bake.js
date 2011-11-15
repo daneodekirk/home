@@ -1,8 +1,9 @@
 (function() {
-  var ONEWEEK, STATIC, app, express, fs, githubify, gpluscontent, gplusimage, picasafy, port, request, url;
+  var ONEWEEK, STATIC, app, express, fs, githubify, gpluscontent, gplusimage, gzippo, picasafy, port, request, url;
   express = require('express');
   app = express.createServer();
   fs = require('fs');
+  gzippo = require('gzippo');
   url = require('url');
   request = require('request');
   ONEWEEK = 2629743000;
@@ -18,10 +19,11 @@
       maxAge: ONEWEEK
     }));
     app.use(express.errorHandler());
-    return app.use(express.compiler({
+    app.use(express.compiler({
       src: "" + STATIC,
       enable: ['less']
     }));
+    return app.use(gzippo.staticGzip(STATIC));
   });
   app.get('/', function(request, response) {
     return response.render('index');
@@ -45,29 +47,25 @@
     });
   });
   app.get('/code', function(req, res) {
-    var lastrepo;
+    var items, lastrepo;
     lastrepo = '';
+    items = {};
     url = 'https://github.com/daneodekirk.json';
     return request(url, function(err, data, body) {
-      var index, items, json, repo;
+      var index, json, repo, _len;
       json = JSON.parse(body);
-      items = (function() {
-        var _len, _results;
-        _results = [];
-        for (index = 0, _len = json.length; index < _len; index++) {
-          repo = json[index];
-          _results.push([
-            {
-              repo: repo.repository.name,
-              date: repo.repository.pushed_at,
-              msg: githubify(repo),
-              type: repo.type,
-              url: repo.url
-            }
-          ][0]);
+      for (index = 0, _len = json.length; index < _len; index++) {
+        repo = json[index];
+        if (!items[repo.repository.name]) {
+          items[repo.repository.name] = [];
         }
-        return _results;
-      })();
+        items[repo.repository.name].push({
+          date: repo.repository.pushed_at,
+          msg: githubify(repo),
+          type: repo.type,
+          url: repo.url
+        });
+      }
       return res.send(JSON.stringify(items));
     });
   });
@@ -97,7 +95,7 @@
   picasafy = function(url) {
     var new_url;
     new_url = url.split('/');
-    new_url[new_url.length - 1] = 's80/';
+    new_url[new_url.length - 1] = 's40-c/';
     return new_url.join('/');
   };
   githubify = function(repo) {
@@ -114,7 +112,7 @@
   };
   gplusimage = function(attachments) {
     if (attachments[0]) {
-      return attachments[0].fullImage.url.replace('s0-d', 's80');
+      return attachments[0].fullImage.url.replace('s0-d', 's40-c');
     }
   };
   gpluscontent = function(item) {

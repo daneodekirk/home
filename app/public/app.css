@@ -8,3 +8,10 @@ img {
 #art .wrapper {
   width: 300px;
 }
+
+.close {
+  display:none;
+}
+#art.span16 .close {
+  display:inline;
+}

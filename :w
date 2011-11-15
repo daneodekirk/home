@@ -18,14 +18,15 @@ html ->
         div '.row', ->
           div '#art.span-one-third', ->
             h3 -> text "art #{ yield -> a '.close', href:'#', -> 'x' }"
-            div '.media-grid', ->
+            (span class:'canvas') for number in [1..16]
             
           div '#code.span-one-third', ->
             h3 -> "code"
-            #(p class:'code') for number in [1..5]
+            (p class:'code') for number in [1..5]
 
           div '#me.span-one-third', ->
             h3 -> "me"
+            (span class:'me') for number in [1..16]
 
 
       footer ".footer", ->
@@ -43,36 +44,41 @@ html ->
           jQuery ($) ->
             name = ''
             close = $('a.close')
-            art = $('.media-grid')
-            me = $('#me')
+            overlay = $('.overlay')
 
-            $.getJSON '/canvas', (data) -> art.append "<a href='#'><img class='thumbnail' src='#{src}'/></a>" for index,src of data
+            $.getJSON '/canvas', (data) -> ( $(el).prepend "<img src='#{data[index]}'/>" if data[index] ) for el,index in $('.canvas')
 
             $.getJSON '/code', (data) ->
               count = 0
-              el = $('#code')
-              for repo,index of data
-                return if count > 7
-                el.append "<h6>#{repo}</h6>"
+              el = $('.code')
+              for obj,index of data
+                return if count is 5
+                el.append "<h4>#{index}</h4>"
                 for item,i in index
                   count++
-                  continue if count > 7
                   el.append "<span class='#{item.type}'>
                                    <a href=#{item.url}>#{item.msg}</a>
                                    <span class='help-block'>#{item.date}</h5>
                                  </span>"
 
-            $.getJSON '/me', (data) ->
-              console.log el,index for el,index of data
-              me.append "<a class='show' href='#{item.url}'>
-                            <img src='#{item.src}' />
-                          </a>" for el,item of data
 
-              #$('#me a').popover placement:'below',html:true,animate:false
+#              ( $(el).prepend "<span class='#{data[index].type}'>
+#                                                            <h5>#{data[index].repo}</h5>
+#                                                            <a href=#{data[index].url}>#{data[index].msg}</a>
+#                                                            <span class='help-block'>#{data[index].date}</h5>
+#                                                          </span>" ) for el,index in $('.code')
+#
+            $.getJSON '/me', (data) ->
+              ( $(el).prepend "<a href='#{data[index].url}' data-content='#{data[index].content}'>
+                                <img src='#{data[index].src}' />
+                              </a>" if data[index]) for el,index in $('.me')
+
+              $('#me a').popover placement:'below',html:true,animate:false
 
 
             $('#art').mouseenter (e) ->
               return if $(this).hasClass 'span16'
+              overlay.toggle()
               $(this).toggleClass 'span-one-third span16'
               $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150'
               

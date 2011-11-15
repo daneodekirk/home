@@ -1,6 +1,7 @@
 express = require 'express'
 app = express.createServer()
 fs = require 'fs'
+gzippo = require 'gzippo'
 
 url = require 'url'
 request = require 'request'
@@ -17,6 +18,7 @@ app.configure ()->
   app.use express.static "#{STATIC}", { maxAge: ONEWEEK }
   app.use express.errorHandler()
   app.use express.compiler { src:"#{STATIC}", enable:['less'] }
+  app.use gzippo.staticGzip STATIC
 
 app.get '/', (request, response) ->
   response.render 'index'
@@ -31,16 +33,17 @@ app.get '/canvas', (req, res) ->
 
 app.get '/code', (req, res) ->
   lastrepo = ''
+  items = {}
   url = 'https://github.com/daneodekirk.json'
   request url, (err, data, body) ->
     json = JSON.parse body
-    items = ( [ {
-      repo: repo.repository.name,
-      date:repo.repository.pushed_at,
-      msg:githubify(repo),
-      type:repo.type,
-      url:repo.url
-    } ][0] for repo,index in json )
+    for repo,index in json
+      items[repo.repository.name] = [] if not items[repo.repository.name]
+      items[repo.repository.name].push
+        date:repo.repository.pushed_at,
+        msg:githubify(repo),
+        type:repo.type,
+        url:repo.url
     res.send JSON.stringify items
      
 app.get '/me', (req, res) ->
@@ -55,7 +58,7 @@ app.get '/me', (req, res) ->
 
 picasafy = (url) ->
   new_url = url.split '/'
-  new_url[new_url.length - 1] = 's80/'
+  new_url[new_url.length - 1] = 's40-c/'
   new_url.join('/')
 
 githubify = (repo) ->
@@ -65,7 +68,7 @@ githubify = (repo) ->
   repo.repository.name
 
 gplusimage = (attachments) ->
-  return attachments[0].fullImage.url.replace 's0-d', 's80' if attachments[0]
+  return attachments[0].fullImage.url.replace 's0-d', 's40-c' if attachments[0]
 
 gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'
