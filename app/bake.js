@@ -1,5 +1,5 @@
 (function() {
-  var ONEWEEK, STATIC, app, express, fs, githubify, gpluscontent, gplusimage, gzippo, picasafy, port, request, url;
+  var ONEWEEK, STATIC, app, day, express, fs, githubify, gpluscontent, gplusimage, gzippo, picasafy, port, request, url;
   express = require('express');
   app = express.createServer();
   fs = require('fs');
@@ -60,7 +60,7 @@
           items[repo.repository.name] = [];
         }
         items[repo.repository.name].push({
-          date: repo.repository.pushed_at,
+          date: day(repo.created_at),
           msg: githubify(repo),
           type: repo.type,
           url: repo.url
@@ -110,6 +110,11 @@
     }
     return repo.repository.name;
   };
+  day = function(time) {
+    var times;
+    times = time.split(' ');
+    return "" + times[0] + " at " + times[1];
+  };
   gplusimage = function(attachments) {
     if (attachments[0]) {
       return attachments[0].fullImage.url.replace('s0-d', 's40-c');
@@ -119,7 +124,7 @@
     if (item.verb === 'checkin') {
       return "Checked in at " + item.placeName;
     }
-    return item.object.content;
+    return "" + (item.title.split(' ').slice(0, 7).join(' ')) + "...";
   };
   port = process.env.PORT || 1123;
   app.listen(port);

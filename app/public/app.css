@@ -4,14 +4,74 @@ body {
 img {
   padding:5px;
 }
+h3 a {
+  color:#000;
+}
+
+
+.container {
+  -webkit-transition: width .5s ease-in-out;
+}
 
 #art .wrapper {
   width: 300px;
 }
+
+/** art **/
+#art {
+  overflow:hidden;
+}
+.media-grid a {
+  overflow:hidden;
+}
+/*
+#art .close {
+  opacity:0;
+}
+#art:hover .close {
+  opacity:.2;
+}
+*/
 
 .close {
   display:none;
 }
 #art.span16 .close {
   display:inline;
+}
+
+#help-out {
+  float:left;
+  width:auto;
+}
+
+/** me **/
+
+#me a {
+  display:block;
+  float:left;
+  width:100%;
+  text-decoration:none;
+}
+#me a:hover .me {
+  color: #000;
+  opacity:.4;
+}
+.me {
+  margin-top:1.3em;
+}
+
+
+/** devices **/
+
+@media (max-width: 960px) {
+  .container {
+    width: 310px;
+  }
+  .span-one-third {
+    clear:both;
+  }
+  #help-out {
+    width:240px;
+  }
 }

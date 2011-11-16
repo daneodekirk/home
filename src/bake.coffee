@@ -27,7 +27,6 @@ app.get '/canvas', (req, res) ->
   url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
   request url, (err, data, body) ->
     json = JSON.parse body
-    #links =  ( picasafy entry.media$group.media$content[0] for entry in json.feed.entry )
     links =  ( picasafy entry.content.src for entry in json.feed.entry )
     res.send JSON.stringify links
 
@@ -40,7 +39,7 @@ app.get '/code', (req, res) ->
     for repo,index in json
       items[repo.repository.name] = [] if not items[repo.repository.name]
       items[repo.repository.name].push
-        date:repo.repository.pushed_at,
+        date:day(repo.created_at),
         msg:githubify(repo),
         type:repo.type,
         url:repo.url
@@ -67,12 +66,17 @@ githubify = (repo) ->
   return "#{repo.repository.name} created!" if repo.type is 'CreateEvent'
   repo.repository.name
 
+day = (time) ->
+  times = time.split(' ')
+  "#{times[0]} at #{times[1]}"
+
 gplusimage = (attachments) ->
   return attachments[0].fullImage.url.replace 's0-d', 's40-c' if attachments[0]
 
 gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'
-  item.object.content
+  #item.object.content
+  "#{item.title.split(' ').slice(0,7).join ' '}..."
 
 port = process.env.PORT or 1123
 app.listen port

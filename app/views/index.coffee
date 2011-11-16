@@ -17,28 +17,27 @@ html ->
       section '#main', ->
         div '.row', ->
           div '#art.span-one-third', ->
-            h3 -> text "art #{ yield -> a '.close', href:'#', -> 'x' }"
+            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'art'} #{ yield -> a '.close', href:'#', -> 'x' }"
             div '.media-grid', ->
             
           div '#code.span-one-third', ->
-            h3 -> "code"
-            #(p class:'code') for number in [1..5]
+            h3 -> a href:'http://github.com/daneodekirk', -> 'code'
 
           div '#me.span-one-third', ->
-            h3 -> "me"
+            h3 -> a href:'https://plus.google.com/u/0/114871092135242691110/posts', -> "me"
 
 
       footer ".footer", ->
         div '.container', ->
-          span "built and designed by Dane Odekirk. help out at #{ yield -> a href:'https://github.com/daneodekirk', -> 'GitHub' }"
+          span '#help-out', -> "built and designed by Dane Odekirk. help out at #{ yield -> a href:'https://github.com/daneodekirk', -> 'GitHub' }"
           span '.pull-right', -> 'put something interesting here'
 
     script src:'lazyload.js'
     coffeescript ->
       LazyLoad.load [
           'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js',
-          'twipsy.js',
-          'http://twitter.github.com/bootstrap/1.4.0/bootstrap-popover.js'
+          'https://raw.github.com/desandro/imagesloaded/master/jquery.imagesloaded.js',
+          'https://raw.github.com/desandro/masonry/master/jquery.masonry.min.js'
         ], ->
           jQuery ($) ->
             name = ''
@@ -46,7 +45,10 @@ html ->
             art = $('.media-grid')
             me = $('#me')
 
-            $.getJSON '/canvas', (data) -> art.append "<a href='#'><img class='thumbnail' src='#{src}'/></a>" for index,src of data
+            $.getJSON '/canvas', (data) ->
+              art.append "<a href='#'><img class='thumbnail' src='#{src}'/></a>" for index,src of data
+              art.masonry isAnimated:true
+              art.imagesLoaded (imgs) -> this.masonry 'reload'
 
             $.getJSON '/code', (data) ->
               count = 0
@@ -63,30 +65,39 @@ html ->
                                  </span>"
 
             $.getJSON '/me', (data) ->
-              console.log el,index for el,index of data
-              me.append "<a class='show' href='#{item.url}'>
-                            <img src='#{item.src}' />
+              me.append "<a href='#{item.url}'>
+                            <img style='float:left;clear:left;' src='#{item.src}' />
+                            <span class='help-block me'>#{item.content}</span>
                           </a>" for el,item of data
+            #close.bind 'click', (e) ->
+            #  close.toggleClass('expanded')
+            #  sizes = ['s40-c', 's150']
+            #  sizes.reverse() if close.hasClass 'expanded'
+            #  close.html (if close.hasClass 'expanded' then 'x' else 'expand')
 
-              #$('#me a').popover placement:'below',html:true,animate:false
+            #  $('#art').toggleClass('span-one-third span16')
 
+            #  $('.media-grid').fadeOut () ->
+            #    $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150'
+            #    $(this).fadeIn()
+            #    $(window).trigger 'resize'
 
             $('#art').mouseenter (e) ->
               return if $(this).hasClass 'span16'
-              $(this).toggleClass 'span-one-third span16'
-              $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150'
-              
-              #$('#main').mouseleave (e) ->
-              #  $('#art').toggleClass 'span-one-third span16'
-              #  $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
-              #  $(this).unbind 'mouseleave'
-              #  close.unbind 'click'
+              $(this).toggleClass('span-one-third span16').width('98%')
+              art.fadeOut () ->
+                art.find('img').each((i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150')
+                  .imagesLoaded (imgs) -> art.masonry 'reload'
+                art.fadeIn()
+             
+             #$('#main').mouseleave (e) ->
+             #  $('#art').toggleClass 'span-one-third span16'
+             #  $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
+             #  $(this).unbind 'mouseleave'
+             #  close.unbind 'click'
 
               close.one 'click', (e) ->
-                $('#art').toggleClass('span-one-third span16')
+                $('#art').removeAttr('style').toggleClass('span-one-third span16')
                   .find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
+                $(window).trigger 'resize'
               #    $('#main').unbind 'mouseleave'
-
-            #$('#art').one 'mouseenter', () ->
-            #  LazyLoad.load 'https://raw.github.com/desandro/masonry/master/jquery.masonry.min.js', ->
-            #    $('#art').masonry itemSelector:'.canvas', isAnimated:true, columnWidth:1, gutterWidth:0
