@@ -13,14 +13,14 @@ html ->
   body ->
     div '.container', ->
       div '#overlay', ->
-      a '.close', href:'#', -> 'x' 
+      a '.close', href:'#', -> 'x'
       section ->
         div '.page-header', ->
           h1 'header'
       section '#main', ->
         div '.row', ->
           div '#art.span-one-third', ->
-            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'art'} #{yield -> a '#expand.pull-right.help-block', href:'#', 'expand'}"
+            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'art'}"
             div '.media-grid', ->
             
           div '#code.span-one-third', ->
@@ -75,7 +75,7 @@ html ->
                             <span class='help-block me'>#{item.content}</span>
                           </a>" for el,item of data
 
-            $('#art').mouseenter (e) ->
+            $('#art').click (e) ->
               return if $(this).hasClass 'span16'
               container.toggleClass 'active'
               $(this).toggleClass('span-one-third span16').width('98%')
