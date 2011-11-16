@@ -2,6 +2,7 @@ doctype 5
 html ->
   head ->
     meta charset: 'utf-8'
+    meta name:'viewport', content:'width=device-width'
     title -> 'Cake'
     ie 'lt IE9', ->
       script src: 'http://html5shim.googlecode.com/svn/trunk/html5.js', type:'text/javascript'
@@ -11,13 +12,15 @@ html ->
 
   body ->
     div '.container', ->
+      div '#overlay', ->
+      a '.close', href:'#', -> 'x' 
       section ->
         div '.page-header', ->
           h1 'header'
       section '#main', ->
         div '.row', ->
           div '#art.span-one-third', ->
-            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'art'} #{ yield -> a '.close', href:'#', -> 'x' }"
+            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'art'} #{yield -> a '#expand.pull-right.help-block', href:'#', 'expand'}"
             div '.media-grid', ->
             
           div '#code.span-one-third', ->
@@ -44,6 +47,8 @@ html ->
             close = $('a.close')
             art = $('.media-grid')
             me = $('#me')
+            big = $('#overlay')
+            container = $('.container')
 
             $.getJSON '/canvas', (data) ->
               art.append "<a href='#'><img class='thumbnail' src='#{src}'/></a>" for index,src of data
@@ -66,38 +71,29 @@ html ->
 
             $.getJSON '/me', (data) ->
               me.append "<a href='#{item.url}'>
-                            <img style='float:left;clear:left;' src='#{item.src}' />
+                            <img style='float:left;clear:left;' src='#{item.src}' width='40' height='40' />
                             <span class='help-block me'>#{item.content}</span>
                           </a>" for el,item of data
-            #close.bind 'click', (e) ->
-            #  close.toggleClass('expanded')
-            #  sizes = ['s40-c', 's150']
-            #  sizes.reverse() if close.hasClass 'expanded'
-            #  close.html (if close.hasClass 'expanded' then 'x' else 'expand')
-
-            #  $('#art').toggleClass('span-one-third span16')
-
-            #  $('.media-grid').fadeOut () ->
-            #    $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150'
-            #    $(this).fadeIn()
-            #    $(window).trigger 'resize'
 
             $('#art').mouseenter (e) ->
               return if $(this).hasClass 'span16'
+              container.toggleClass 'active'
               $(this).toggleClass('span-one-third span16').width('98%')
               art.fadeOut () ->
                 art.find('img').each((i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150')
                   .imagesLoaded (imgs) -> art.masonry 'reload'
                 art.fadeIn()
              
-             #$('#main').mouseleave (e) ->
-             #  $('#art').toggleClass 'span-one-third span16'
-             #  $(this).find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
-             #  $(this).unbind 'mouseleave'
-             #  close.unbind 'click'
-
               close.one 'click', (e) ->
                 $('#art').removeAttr('style').toggleClass('span-one-third span16')
-                  .find('img').each (i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c'
-                $(window).trigger 'resize'
-              #    $('#main').unbind 'mouseleave'
+                  .find('img').each((i,el) -> $(this).attr 'src', el.src.replace 's150', 's40-c')
+                    .imagesLoaded () -> art.masonry 'reload'
+                container.toggleClass 'active'
+                big.height(0)
+
+            art.delegate 'img', 'click', () ->
+              src = this.src.replace('s150','h400').replace 's40-c', 'h400'
+              big.html("<img class='well' style='display:none' src=#{src} height='400' />")
+                .imagesLoaded (img) ->
+                  img.css('margin-left',(960-img.width())/2).fadeIn()
+                  big.height 440
