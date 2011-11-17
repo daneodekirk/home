@@ -8,37 +8,56 @@ h3 a {
   color:#000;
 }
 
-
 .container {
+  position:relative;
   -webkit-transition: width .5s ease-in-out;
+}
+
+
+/** art **/
+
+#art {
+  overflow:hidden;
+  background-color:#fff;
+}
+.media-grid a {
+  overflow:hidden;
 }
 
 #art .wrapper {
   width: 300px;
 }
 
-/** art **/
-#art {
-  overflow:hidden;
+#art:hover #expand {
+  display:inline;
 }
-.media-grid a {
-  overflow:hidden;
+
+#art #expand {
+  display:none;
+  margin-top:13px;
 }
-/*
-#art .close {
-  opacity:0;
+
+.container.active #expand {
+  display:none;
 }
-#art:hover .close {
-  opacity:.2;
+.container.active #art:hover #expand {
+  display:inline;
 }
-*/
 
 .close {
   display:none;
+  position:absolute;
+  top:10px;
+  right:10px;
 }
+.container.large .close {
+  display:inline;
+}
+/*
 #art.span16 .close {
   display:inline;
 }
+  */
 
 #help-out {
   float:left;
@@ -47,18 +66,25 @@ h3 a {
 
 /** me **/
 
-#me a {
+#me > a {
   display:block;
   float:left;
   width:100%;
   text-decoration:none;
 }
-#me a:hover .me {
+#me > a:hover .me {
   color: #000;
   opacity:.4;
 }
 .me {
   margin-top:1.3em;
+}
+
+/** overlay **/
+#overlay{
+  -webkit-transition: height .5s ease-in-out;
+  height:0px;
+  overflow:hidden;
 }
 
 
