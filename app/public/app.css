@@ -8,9 +8,14 @@ h3 a {
   color:#000;
 }
 
-.container {
+.container.loaded {
   position:relative;
   -webkit-transition: width .5s ease-in-out;
+  -moz-transition: width .5s ease-in-out;
+  -o-transition: width .5s ease-in-out;
+}
+.help-block {
+  font-size:11px;
 }
 
 
@@ -80,9 +85,15 @@ h3 a {
   margin-top:1.3em;
 }
 
+#me img {
+  float:left;clear:left;
+}
+
 /** overlay **/
 #overlay{
   -webkit-transition: height .5s ease-in-out;
+  -moz-transition: height .5s ease-in-out;
+  -o-transition: height .5s ease-in-out;
   height:0px;
   overflow:hidden;
 }

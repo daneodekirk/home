@@ -1,11 +1,12 @@
 (function() {
-  var ONEWEEK, STATIC, app, day, express, fs, githubify, gpluscontent, gplusimage, gzippo, picasafy, port, request, url;
+  var NodeCache, ONEWEEK, STATIC, app, day, express, feedcache, fs, githubify, gpluscontent, gplusimage, picasify, port, request, url;
   express = require('express');
   app = express.createServer();
   fs = require('fs');
-  gzippo = require('gzippo');
   url = require('url');
   request = require('request');
+  NodeCache = require('node-cache');
+  feedcache = new NodeCache();
   ONEWEEK = 2629743000;
   STATIC = "" + (process.cwd()) + "/app/public";
   app.configure(function() {
@@ -17,86 +18,112 @@
     app.register('.coffee', require('coffeekup').adapters.express);
     app.use(express.static("" + STATIC, {
       maxAge: ONEWEEK
+    }, {
+      test: 'foobar'
     }));
     app.use(express.errorHandler());
     app.use(express.compiler({
       src: "" + STATIC,
       enable: ['less']
     }));
-    return app.use(gzippo.staticGzip(STATIC));
-  });
-  app.get('/', function(request, response) {
-    return response.render('index');
-  });
-  app.get('/canvas', function(req, res) {
-    url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
-    return request(url, function(err, data, body) {
-      var entry, json, links;
-      json = JSON.parse(body);
-      links = (function() {
-        var _i, _len, _ref, _results;
-        _ref = json.feed.entry;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          entry = _ref[_i];
-          _results.push(picasafy(entry.content.src));
-        }
-        return _results;
-      })();
-      return res.send(JSON.stringify(links));
+    return app.use(function(req, res, next) {
+      res.header('Vary', 'Accept-Encoding');
+      return next();
     });
   });
-  app.get('/code', function(req, res) {
-    var items, lastrepo;
-    lastrepo = '';
-    items = {};
-    url = 'https://github.com/daneodekirk.json';
-    return request(url, function(err, data, body) {
-      var index, json, repo, _len;
-      json = JSON.parse(body);
-      for (index = 0, _len = json.length; index < _len; index++) {
-        repo = json[index];
-        if (!items[repo.repository.name]) {
-          items[repo.repository.name] = [];
-        }
-        items[repo.repository.name].push({
-          date: day(repo.created_at),
-          msg: githubify(repo),
-          type: repo.type,
-          url: repo.url
+  app.get('/', function(req, res) {
+    return feedcache.get('feeds', function(err, cache) {
+      var feeds;
+      if (cache.feeds === void 0) {
+        feeds = {};
+        url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
+        return request(url, function(err, data, body) {
+          var entry, json;
+          json = JSON.parse(body);
+          feeds.canvas = (function() {
+            var _i, _len, _ref, _results;
+            _ref = json.feed.entry;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              entry = _ref[_i];
+              _results.push([
+                {
+                  src: picasify(entry.content.src, 's40-c'),
+                  med: picasify(entry.content.src, 's150'),
+                  lrg: picasify(entry.content.src, 'h390')
+                }
+              ][0]);
+            }
+            return _results;
+          })();
+          url = 'https://github.com/daneodekirk.json';
+          return request(url, function(err, data, body) {
+            var index, items, repo, _len;
+            items = {};
+            json = JSON.parse(body);
+            for (index = 0, _len = json.length; index < _len; index++) {
+              repo = json[index];
+              if (index > 6) {
+                continue;
+              }
+              if (!items[repo.repository.name]) {
+                items[repo.repository.name] = [];
+              }
+              items[repo.repository.name].push({
+                date: day(repo.created_at),
+                msg: githubify(repo),
+                type: repo.type,
+                url: repo.url
+              });
+            }
+            feeds.code = items;
+            url = "https://www.googleapis.com/plus/v1/people/114871092135242691110/activities/public?key=" + process.env.GPLUS;
+            return request(url, function(err, data, body) {
+              var item;
+              json = JSON.parse(body);
+              feeds.me = (function() {
+                var _i, _len2, _ref, _results;
+                _ref = json.items;
+                _results = [];
+                for (_i = 0, _len2 = _ref.length; _i < _len2; _i++) {
+                  item = _ref[_i];
+                  _results.push([
+                    {
+                      url: item.url,
+                      src: gplusimage(item.object.attachments),
+                      content: gpluscontent(item)
+                    }
+                  ][0]);
+                }
+                return _results;
+              })();
+              feedcache.set("feeds", feeds, 3600);
+              return res.render('index', {
+                canvas: feeds.canvas,
+                code: feeds.code,
+                me: feeds.me
+              });
+            });
+          });
+        });
+      } else {
+        return res.render('index', {
+          canvas: cache.feeds.canvas,
+          code: cache.feeds.code,
+          me: cache.feeds.me
         });
       }
-      return res.send(JSON.stringify(items));
     });
   });
-  app.get('/me', function(req, res) {
-    url = "https://www.googleapis.com/plus/v1/people/114871092135242691110/activities/public?key=" + process.env.GPLUS;
-    return request(url, function(err, data, body) {
-      var item, json;
-      json = JSON.parse(body);
-      return res.send(JSON.stringify((function() {
-        var _i, _len, _ref, _results;
-        _ref = json.items;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          item = _ref[_i];
-          _results.push([
-            {
-              url: item.url,
-              src: gplusimage(item.object.attachments),
-              content: gpluscontent(item)
-            }
-          ][0]);
-        }
-        return _results;
-      })()));
-    });
-  });
-  picasafy = function(url) {
-    var new_url;
-    new_url = url.split('/');
-    new_url[new_url.length - 1] = 's40-c/';
-    return new_url.join('/');
+  picasify = function(url, size) {
+    var new_url, parts;
+    parts = url.split('/');
+    parts[parts.length - 1] = "" + size + "/";
+    new_url = parts.join('/');
+    if (size === 's40-c') {
+      new_url += '?sz=40';
+    }
+    return new_url;
   };
   githubify = function(repo) {
     if (repo.type === 'PushEvent') {
@@ -106,7 +133,7 @@
       return "" + repo.repository.name + " forked!";
     }
     if (repo.type === 'CreateEvent') {
-      return "" + repo.repository.name + " created!";
+      return "" + repo.repository.name + " " + repo.payload.ref_type + " created!";
     }
     return repo.repository.name;
   };
@@ -115,9 +142,9 @@
     times = time.split(' ');
     return "" + times[0] + " at " + times[1];
   };
-  gplusimage = function(attachments) {
+  gplusimage = function(attachments, size) {
     if (attachments[0]) {
-      return attachments[0].fullImage.url.replace('s0-d', 's40-c');
+      return "" + (attachments[0].fullImage.url.replace('s0-d/', '')) + "?sz=40";
     }
   };
   gpluscontent = function(item) {
