@@ -1,17 +1,30 @@
 (function() {
   var NodeCache, ONEWEEK, STATIC, app, ck, day, express, feedcache, fs, githubify, gpluscontent, gplusimage, io, picasify, port, request, socket, url;
+
   ck = require('coffeekup');
+
   express = require('express');
+
   app = express.createServer();
+
   fs = require('fs');
+
   socket = require('socket.io');
+
   io = socket.listen(app);
+
   url = require('url');
+
   request = require('request');
+
   NodeCache = require('node-cache');
+
   feedcache = new NodeCache();
+
   ONEWEEK = 2629743000;
+
   STATIC = "" + (process.cwd()) + "/app/public";
+
   app.configure(function() {
     app.set('views', './app/views');
     app.set('view options', {
@@ -34,6 +47,7 @@
       return next();
     });
   });
+
   app.get('/', function(req, res) {
     return feedcache.get('feeds', function(err, cache) {
       var feeds;
@@ -66,12 +80,8 @@
             json = JSON.parse(body);
             for (index = 0, _len = json.length; index < _len; index++) {
               repo = json[index];
-              if (index > 6) {
-                continue;
-              }
-              if (!items[repo.repository.name]) {
-                items[repo.repository.name] = [];
-              }
+              if (index > 6) continue;
+              if (!items[repo.repository.name]) items[repo.repository.name] = [];
               items[repo.repository.name].push({
                 date: day(repo.created_at),
                 msg: githubify(repo),
@@ -118,44 +128,42 @@
       }
     });
   });
+
   picasify = function(url, size) {
     var new_url, parts;
     parts = url.split('/');
     parts[parts.length - 1] = "" + size + "/";
     new_url = parts.join('/');
-    if (size === 's40-c') {
-      new_url += '?sz=40';
-    }
+    if (size === 's40-c') new_url += '?sz=40';
     return new_url;
   };
+
   githubify = function(repo) {
-    if (repo.type === 'PushEvent') {
-      return repo.payload.shas[0][2];
-    }
-    if (repo.type === 'ForkEvent') {
-      return "" + repo.repository.name + " forked!";
-    }
+    if (repo.type === 'PushEvent') return repo.payload.shas[0][2];
+    if (repo.type === 'ForkEvent') return "" + repo.repository.name + " forked!";
     if (repo.type === 'CreateEvent') {
       return "" + repo.repository.name + " " + repo.payload.ref_type + " created!";
     }
     return repo.repository.name;
   };
+
   day = function(time) {
     var times;
     times = time.split(' ');
     return "" + times[0] + " at " + times[1];
   };
+
   gplusimage = function(attachments, size) {
     if (attachments[0]) {
       return "" + (attachments[0].fullImage.url.replace('s0-d/', '')) + "?sz=200";
     }
   };
+
   gpluscontent = function(item) {
-    if (item.verb === 'checkin') {
-      return "Checked in at " + item.placeName;
-    }
+    if (item.verb === 'checkin') return "Checked in at " + item.placeName;
     return "" + (item.title.split(' ').slice(0, 7).join(' ')) + "...";
   };
+
   io.sockets.on('connection', function(socket) {
     socket.emit('clear');
     url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
@@ -183,7 +191,11 @@
       return _results;
     });
   });
+
   port = process.env.PORT || 1123;
+
   app.listen(port);
+
   console.log("Server running on port " + (app.address().port));
+
 }).call(this);

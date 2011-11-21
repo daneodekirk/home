@@ -1,4 +1,4 @@
-(function() {
+
   LazyLoad.load(['https://s3.amazonaws.com/odekirk/socket.io.js', 'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js', 'https://s3.amazonaws.com/odekirk/imagesloaded.jquery.min.js', 'https://s3.amazonaws.com/odekirk/jquery.masonry.min.js'], function() {
     var socket;
     jQuery(function($) {
@@ -69,4 +69,3 @@
       return $('#post').append(data).children().fadeIn(900);
     });
   });
-}).call(this);
