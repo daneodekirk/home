@@ -6,7 +6,8 @@
     "express": "2.4.x",
     "coffeekup" : "0.3.x",
     "request" : "2.1.x",
-    "node-cache": "0.2.0"
+    "node-cache": "0.2.x",
+    "socket.io": "0.8.x"
   },
   "engine": "node >= 0.4.1"
 }

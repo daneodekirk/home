@@ -1,6 +1,10 @@
+ck = require 'coffeekup'
 express = require 'express'
 app = express.createServer()
 fs = require 'fs'
+
+socket = require 'socket.io'
+io = socket.listen app
 
 url = require 'url'
 request = require 'request'
@@ -85,7 +89,8 @@ day = (time) ->
   "#{times[0]} at #{times[1]}"
 
 gplusimage = (attachments, size) ->
-  return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=40" if attachments[0]
+  return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=200" if attachments[0]
+  #return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=40" if attachments[0]
   #sz = if size is 's40-c' then 'sz=40' else ''
   #return "#{attachments[0].fullImage.url.replace('s0-d', size)}#{sz}" if attachments[0]
 
@@ -93,6 +98,30 @@ gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'
   #item.object.content
   "#{item.title.split(' ').slice(0,7).join ' '}..."
+
+
+#socket.io
+
+io.sockets.on 'connection', (socket) ->
+  socket.emit 'clear'
+
+  url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
+  request url, (err, data, body) ->
+    json = JSON.parse body
+    socket.emit 'painting', """
+      <a data-lrg='#{picasify(entry.content.src, 'h390')}'>
+        <img class='thumbnail' style='display:none' src="#{picasify(entry.content.src, 's120-c')}" data-med="#{picasify(entry.content.src, 's150')}"
+      </a>
+    """ for entry in json.feed.entry
+
+  url = "https://www.googleapis.com/plus/v1/people/114871092135242691110/activities/public?key=#{process.env.GPLUS}"
+  request url, (err, data, body) ->
+    json = JSON.parse body
+    socket.emit 'post', """
+      <a style="display:none" data-lrg='#{item.url}'>
+        <img class='thumbnail' src="#{gplusimage(item.object.attachments)}" />
+      </a>
+    """ for item in json.items
 
 port = process.env.PORT or 1123
 app.listen port

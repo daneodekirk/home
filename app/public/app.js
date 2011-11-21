@@ -1,6 +1,7 @@
 (function() {
-  LazyLoad.load(['https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js', 'https://s3.amazonaws.com/odekirk/imagesloaded.jquery.min.js', 'https://s3.amazonaws.com/odekirk/jquery.masonry.min.js'], function() {
-    return jQuery(function($) {
+  LazyLoad.load(['https://s3.amazonaws.com/odekirk/socket.io.js', 'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js', 'https://s3.amazonaws.com/odekirk/imagesloaded.jquery.min.js', 'https://s3.amazonaws.com/odekirk/jquery.masonry.min.js'], function() {
+    var socket;
+    jQuery(function($) {
       var art, big, canvas, close, container, expand, minify;
       close = $('a.close');
       art = $('#art');
@@ -16,9 +17,7 @@
         canvas.fadeOut(function() {
           canvas.find('img').each(function(i, el) {
             return $(this).attr('src', el.src.replace('s40-c', 's150'));
-          }).imagesLoaded(function(imgs) {
-            return canvas.masonry('reload');
-          });
+          }).imagesLoaded(function(imgs) {});
           canvas.fadeIn();
           return minify.show();
         });
@@ -56,6 +55,18 @@
         });
       });
       return container.addClass('loaded');
+    });
+    socket = io.connect('http://localhost');
+    socket.on('clear', function() {
+      return $('#gallery').empty();
+    });
+    socket.on('painting', function(data) {
+      return $('#gallery').append(data).imagesLoaded(function(images) {
+        return $(images).fadeIn(900);
+      });
+    });
+    return socket.on('post', function(data) {
+      return $('#post').append(data).children().fadeIn(900);
     });
   });
 }).call(this);

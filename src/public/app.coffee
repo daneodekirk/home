@@ -1,4 +1,5 @@
 LazyLoad.load [
+  'https://s3.amazonaws.com/odekirk/socket.io.js',
   'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js',
   'https://s3.amazonaws.com/odekirk/imagesloaded.jquery.min.js',
   'https://s3.amazonaws.com/odekirk/jquery.masonry.min.js'
@@ -18,7 +19,7 @@ LazyLoad.load [
         container.addClass 'active'
         canvas.fadeOut () ->
           canvas.find('img').each((i,el) -> $(this).attr 'src', el.src.replace 's40-c', 's150')
-            .imagesLoaded (imgs) -> canvas.masonry 'reload'
+            .imagesLoaded (imgs) -> #canvas.masonry 'reload'
           canvas.fadeIn()
           minify.show()
 
@@ -49,3 +50,10 @@ LazyLoad.load [
 
       canvas.imagesLoaded () -> this.masonry isAnimated:true
       container.addClass 'loaded'
+
+
+    #socket.io
+    socket = io.connect 'http://localhost'
+    socket.on 'clear', -> $('#gallery').empty()
+    socket.on 'painting', (data) -> $('#gallery').append(data).imagesLoaded (images)-> $(images).fadeIn 900
+    socket.on 'post', (data) -> $('#post').append(data).children().fadeIn 900
