@@ -5,6 +5,7 @@ fs = require 'fs'
 
 socket = require 'socket.io'
 io = socket.listen app
+io.set 'log level', 1
 
 url = require 'url'
 request = require 'request'
@@ -29,47 +30,7 @@ app.configure ()->
     res.header 'Vary', 'Accept-Encoding'
     next()
 
-app.get '/', (req, res) ->
-  feedcache.get 'feeds', (err, cache) ->
-    if cache.feeds is undefined
-      #console.log 'no cache '
-      feeds = {}
-      url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
-      request url, (err, data, body) ->
-        json = JSON.parse body
-        feeds.canvas = ( [{
-          src:picasify(entry.content.src, 's40-c'),
-          med:picasify(entry.content.src, 's150'),
-          lrg:picasify(entry.content.src, 'h390')
-        }][0] for entry in json.feed.entry )
-
-        url = 'https://github.com/daneodekirk.json'
-        request url, (err, data, body) ->
-          items = {}
-          json = JSON.parse body
-          for repo,index in json
-            continue if index > 6
-            items[repo.repository.name] = [] if not items[repo.repository.name]
-            items[repo.repository.name].push
-              date:day(repo.created_at),
-              msg:githubify(repo),
-              type:repo.type,
-              url:repo.url
-          feeds.code = items
-
-          url = "https://www.googleapis.com/plus/v1/people/114871092135242691110/activities/public?key=#{process.env.GPLUS}"
-          request url, (err, data, body) ->
-            json = JSON.parse body
-            feeds.me = ([ {
-              url:item.url,
-              src:gplusimage(item.object.attachments),
-              content:gpluscontent(item)
-            } ][0] for item in json.items)
-            feedcache.set "feeds", feeds, 3600 #, () -> console.log 'successful save in cache'
-            res.render 'index', canvas: feeds.canvas, code:feeds.code, me:feeds.me
-    else
-      #console.log 'found in cache'
-      res.render 'index', canvas: cache.feeds.canvas, code:cache.feeds.code, me:cache.feeds.me
+app.get '/', (req, res) -> res.render 'index'
 
 picasify = (url, size) ->
   parts = url.split '/'
@@ -90,14 +51,10 @@ day = (time) ->
 
 gplusimage = (attachments, size) ->
   return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=200" if attachments[0]
-  #return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=40" if attachments[0]
-  #sz = if size is 's40-c' then 'sz=40' else ''
-  #return "#{attachments[0].fullImage.url.replace('s0-d', size)}#{sz}" if attachments[0]
 
 gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'
-  #item.object.content
-  "#{item.title.split(' ').slice(0,7).join ' '}..."
+  "#{item.title.split(' ').slice(0,23).join ' '}..."
 
 
 #socket.io
@@ -108,9 +65,10 @@ io.sockets.on 'connection', (socket) ->
   url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
   request url, (err, data, body) ->
     json = JSON.parse body
+    socket.emit 'canvas height', (json.feed.entry.length / 6) * 148
     socket.emit 'painting', """
-      <a data-lrg='#{picasify(entry.content.src, 'h390')}'>
-        <img class='thumbnail' style='display:none' src="#{picasify(entry.content.src, 's120-c')}" data-med="#{picasify(entry.content.src, 's150')}"
+      <a style='display:none' data-lrg='#{picasify(entry.content.src, 'h390')}'>
+        <img class='thumbnail' style='' src="#{picasify(entry.content.src, 's120-c')}" data-med="#{picasify(entry.content.src, 's150')}"
       </a>
     """ for entry in json.feed.entry
 
@@ -118,10 +76,32 @@ io.sockets.on 'connection', (socket) ->
   request url, (err, data, body) ->
     json = JSON.parse body
     socket.emit 'post', """
-      <a style="display:none" data-lrg='#{item.url}'>
+      <a style="display:none">
         <img class='thumbnail' src="#{gplusimage(item.object.attachments)}" />
+        <span><p>#{gpluscontent(item)}</p></span>
       </a>
     """ for item in json.items
+
+  # this is no fun :(
+  url = 'https://github.com/daneodekirk.json'
+  request url, (err, data, body) ->
+    repos = {}
+    json = JSON.parse body
+    json.map (a,b) -> repos[a.repository.name] = a.repository.owner if a.type isnt "ForkEvent"
+
+    socket.emit('repo', repos)
+     
+    for repo,owner of repos
+      url = "https://api.github.com/repos/#{owner}/#{repo}/commits"
+      request url, (err, data, body) ->
+        repo = @uri.pathname.split('/')[-2..-2]
+        json = JSON.parse body
+        (socket.emit('commits', repo:repo, html:"""
+          <span style="display:none">
+            <a href='http://github.com/#{owner}/#{repo}/compare/#{item.parents[0].sha}...#{item.sha}'> #{item.commit.message} </a>
+            <span class='help-block'> #{item.commit.committer.date} </span>
+          </span>
+        """) if index < 6) for item,index in json
 
 port = process.env.PORT or 1123
 app.listen port

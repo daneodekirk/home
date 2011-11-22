@@ -71,22 +71,35 @@ h3 a {
 
 /** me **/
 
-#me > a {
-  display:block;
-  float:left;
-  width:100%;
-  text-decoration:none;
-}
-#me > a:hover .me {
-  color: #000;
-  opacity:.4;
-}
-.me {
-  margin-top:1.3em;
+#post > a {
+  position:relative;
 }
 
-#me img {
-  float:left;clear:left;
+#post span {
+  display:none;
+  position: absolute;
+  width: 200px;
+  top: -1px;
+  margin: 10px;
+  left: -1px;
+  background-color: rgba(255, 150, 0, 0.5);
+  overflow: hidden;
+  height: 200px;
+}
+
+#post a:hover span {
+  display:inline;
+}
+
+#post p {
+  font-size: 50px;
+  line-height: 40px;
+  font-weight: 800;
+  color: #FFF;
+}
+
+#post a {
+  text-decoration: none;
 }
 
 /** overlay **/

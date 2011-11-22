@@ -36,7 +36,6 @@ LazyLoad.load [
       canvas.delegate 'a', 'click', () ->
         container.addClass 'large'
         src = $(this).data('lrg')
-        #src = $(this).children().get(0).src.replace('s150','h400').replace 's40-c', 'h390'
         big.html("<img class='well' style='display:none' src=#{src} height='390' />")
           .imagesLoaded (img) ->
             img.css('margin-left',(960-img.width())/2).fadeIn()
@@ -54,6 +53,10 @@ LazyLoad.load [
 
     #socket.io
     socket = io.connect 'http://localhost'
-    socket.on 'clear', -> $('#gallery').empty()
-    socket.on 'painting', (data) -> $('#gallery').append(data).imagesLoaded (images)-> $(images).fadeIn 900
+    socket.on 'clear', -> $('#gallery, #post, #code').empty()
+    socket.on 'canvas height', (data) -> $('#art').css 'min-height', data
+    socket.on 'painting', (data) -> $('#gallery').append(data).imagesLoaded (images)-> $(images).parent().fadeIn 900
     socket.on 'post', (data) -> $('#post').append(data).children().fadeIn 900
+    socket.on 'repo', (data) -> $('#code').append("<div id='#{repo}' class='span-one-third'><h6>#{repo}</h6></div>") for repo of data
+    socket.on 'commits', (data) -> $("##{data.repo}").append(data.html).children().fadeIn 900
+
