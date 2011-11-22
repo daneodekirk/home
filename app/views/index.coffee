@@ -15,22 +15,20 @@ html ->
       div '#overlay', ->
       a '.close', href:'#', -> 'x'
       section ->
-        div '.page-header', ->
-          h1 'header'
+        div '.name.page-header', ->
+          h1 'dane odekirk'
       section '#main', ->
         div '.row', ->
-          div '#art.span16', ->
-            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'canvas'}
-                    #{yield -> a '#expand.pull-right.help-block', href:'#', 'expanded view'}
-                    #{yield -> a '#minify.pull-right.help-block',style:'display:none', href:'#', 'thumbnail view'}"
+          div '#art.large.span16', ->
+            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'canvas'}"
             div '#gallery.media-grid', ->
 
-          div '#me.span16', ->
+          div '#me.large.span16', ->
             h3 -> a href:'https://plus.google.com/u/0/114871092135242691110/posts', -> "me"
             div '#post.media-grid', ->
 
-          div '.span16', ->
-            h3 -> a href:'http://github.com/daneodekirk', -> 'code'
+          div '.large.span16', ->
+            h3 '#code-title', -> a href:'http://github.com/daneodekirk', -> 'code'
             div '#code.row', ->
 
       footer ".footer", ->

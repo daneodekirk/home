@@ -4,8 +4,34 @@ body {
 img {
   padding:5px;
 }
-h3 a {
-  color:#000;
+
+/** titles **/
+
+div.name {
+  overflow:hidden;
+}
+div.name h1 {
+  font-size: 70px;
+  padding-top: 10px;
+}
+
+div.large {
+  min-height:120px;
+}
+
+div.large h3 {
+  font-size:190px;
+  line-height:95px;
+  margin-bottom: -25px;
+  opacity:.3;
+}
+div.large h3 a {
+  color:rgb(150,150,150);
+  display:block;
+}
+div.large h3 a:hover {
+  text-decoration:none;
+  color:#00438A;
 }
 
 .container.loaded {
@@ -14,10 +40,11 @@ h3 a {
   -moz-transition: width .5s ease-in-out;
   -o-transition: width .5s ease-in-out;
 }
-.help-block {
-  font-size:11px;
-}
 
+#code-title {
+  position: absolute;
+  z-index: -9999;
+}
 
 /** art **/
 
@@ -33,22 +60,6 @@ h3 a {
   width: 300px;
 }
 
-#art:hover #expand {
-  display:inline;
-}
-
-#art #expand {
-  display:none;
-  margin-top:13px;
-}
-
-.container.active #expand {
-  display:none;
-}
-.container.active #art:hover #expand {
-  display:inline;
-}
-
 .close {
   display:none;
   position:absolute;
@@ -58,25 +69,54 @@ h3 a {
 .container.large .close {
   display:inline;
 }
-/*
-#art.span16 .close {
+
+#gallery > a {
+  background-color:#FFF;
+  position:relative;
+}
+
+#gallery span {
+  display:none;
+  cursor:pointer;
+  position: absolute;
+  width: 200px;
+  top: -1px;
+  margin: 10px;
+  left: -1px;
+  background-color: rgba(0, 105, 214, 0.5);
+  overflow: hidden;
+  height: 200px;
+}
+
+#gallery a {
+  text-decoration:none;
+}
+
+#gallery a:hover span {
   display:inline;
 }
-  */
 
-#help-out {
-  float:left;
-  width:auto;
+#gallery p {
+  font-size: 55px;
+  line-height: 45px;
+  font-weight: 900;
+  color: #FFF;
 }
 
 /** me **/
 
+#post {
+  margin-bottom:30px;
+}
+
 #post > a {
+  background-color:#FFF;
   position:relative;
 }
 
 #post span {
   display:none;
+  cursor:pointer;
   position: absolute;
   width: 200px;
   top: -1px;
@@ -102,6 +142,7 @@ h3 a {
   text-decoration: none;
 }
 
+
 /** overlay **/
 #overlay{
   -webkit-transition: height .5s ease-in-out;
@@ -109,6 +150,18 @@ h3 a {
   -o-transition: height .5s ease-in-out;
   height:0px;
   overflow:hidden;
+}
+
+
+/** footer **/
+
+.help-block {
+  font-size:11px;
+}
+
+#help-out {
+  float:left;
+  width:auto;
 }
 
 

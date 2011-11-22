@@ -82,12 +82,11 @@
     request(url, function(err, data, body) {
       var entry, json, _i, _len, _ref, _results;
       json = JSON.parse(body);
-      socket.emit('canvas height', (json.feed.entry.length / 6) * 148);
       _ref = json.feed.entry;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        _results.push(socket.emit('painting', "<a style='display:none' data-lrg='" + (picasify(entry.content.src, 'h390')) + "'>\n  <img class='thumbnail' style='' src=\"" + (picasify(entry.content.src, 's120-c')) + "\" data-med=\"" + (picasify(entry.content.src, 's150')) + "\"\n</a>"));
+        _results.push(socket.emit('painting', "<a style='display:none' data-lrg='" + (picasify(entry.content.src, 'h390')) + "'>\n  <img class='thumbnail' style='' src=\"" + (picasify(entry.content.src, 's200-c')) + "\" data-med=\"" + (picasify(entry.content.src, 's150')) + "\" />\n  <span><p>" + entry.summary.$t + "</p></span>\n</a>"));
       }
       return _results;
     });

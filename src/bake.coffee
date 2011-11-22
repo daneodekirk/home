@@ -65,10 +65,10 @@ io.sockets.on 'connection', (socket) ->
   url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
   request url, (err, data, body) ->
     json = JSON.parse body
-    socket.emit 'canvas height', (json.feed.entry.length / 6) * 148
     socket.emit 'painting', """
       <a style='display:none' data-lrg='#{picasify(entry.content.src, 'h390')}'>
-        <img class='thumbnail' style='' src="#{picasify(entry.content.src, 's120-c')}" data-med="#{picasify(entry.content.src, 's150')}"
+        <img class='thumbnail' style='' src="#{picasify(entry.content.src, 's200-c')}" data-med="#{picasify(entry.content.src, 's150')}" />
+        <span><p>#{entry.summary.$t}</p></span>
       </a>
     """ for entry in json.feed.entry
 
