@@ -101,6 +101,8 @@ div.large h3 a:hover {
   line-height: 45px;
   font-weight: 900;
   color: #FFF;
+  position:absolute;
+  bottom:0;
 }
 
 /** me **/
