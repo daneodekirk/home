@@ -8,4 +8,7 @@
 *.swp
 *.swo
 node_modules/
+app/public/css
+app/public/js
+app/public/gzip
 .monitor
