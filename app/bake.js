@@ -98,7 +98,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         item = _ref[_i];
-        _results.push(socket.emit('post', "<a style=\"display:none\">\n  <img class='thumbnail' src=\"" + (gplusimage(item.object.attachments)) + "\" />\n  <span><p>" + (gpluscontent(item)) + "</p></span>\n</a>"));
+        _results.push(socket.emit('post', "<a href=\"" + item.url + "\" style=\"display:none\">\n  <img class='thumbnail' src=\"" + (gplusimage(item.object.attachments)) + "\" />\n  <span><p>" + (gpluscontent(item)) + "</p></span>\n</a>"));
       }
       return _results;
     });

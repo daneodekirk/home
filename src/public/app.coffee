@@ -6,7 +6,7 @@ LazyLoad.load [
     jQuery ($) ->
       close = $('a.close')
       art = $('#art')
-      canvas = $('.media-grid')
+      canvas = $('#gallery')
       big = $('#overlay')
       container = $('.container')
 

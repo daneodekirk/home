@@ -5,7 +5,7 @@
       var art, big, canvas, close, container;
       close = $('a.close');
       art = $('#art');
-      canvas = $('.media-grid');
+      canvas = $('#gallery');
       big = $('#overlay');
       container = $('.container');
       canvas.delegate('a', 'click', function() {

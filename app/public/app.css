@@ -15,21 +15,15 @@ div.name h1 {
   padding-top: 10px;
 }
 
-div.large {
-  min-height:120px;
-}
-
-div.large h3 {
-  font-size:190px;
-  line-height:95px;
-  margin-bottom: -25px;
-  opacity:.3;
-}
-div.large h3 a {
+h3.large a {
   color:rgb(150,150,150);
   display:block;
+  font-size:190px;
+  line-height:180px;
+  margin-bottom: -60px;
+  opacity:.3;
 }
-div.large h3 a:hover {
+h3.large a:hover {
   text-decoration:none;
   color:#00438A;
 }
@@ -41,16 +35,20 @@ div.large h3 a:hover {
   -o-transition: width .5s ease-in-out;
 }
 
-#code-title {
-  position: absolute;
-  z-index: -9999;
+#code, #post, #gallery {
+  position:relative;
+  z-index:1;
+}
+
+#main {
+  min-height:300px;
 }
 
 /** art **/
 
 #art {
-  overflow:hidden;
   background-color:#fff;
+  margin-top:-30px;
 }
 .media-grid a {
   overflow:hidden;

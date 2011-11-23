@@ -76,7 +76,7 @@ io.sockets.on 'connection', (socket) ->
   request url, (err, data, body) ->
     json = JSON.parse body
     socket.emit 'post', """
-      <a style="display:none">
+      <a href="#{item.url}" style="display:none">
         <img class='thumbnail' src="#{gplusimage(item.object.attachments)}" />
         <span><p>#{gpluscontent(item)}</p></span>
       </a>

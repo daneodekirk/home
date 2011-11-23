@@ -19,16 +19,16 @@ html ->
           h1 'dane odekirk'
       section '#main', ->
         div '.row', ->
-          div '#art.large.span16', ->
-            h3 -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'canvas'}"
+          div '#art.span16', ->
+            h3 '.large', -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'canvas'}"
             div '#gallery.media-grid', ->
 
-          div '#me.large.span16', ->
-            h3 -> a href:'https://plus.google.com/u/0/114871092135242691110/posts', -> "me"
+          div '#me.span16', ->
+            h3 '.large', -> a href:'https://plus.google.com/u/0/114871092135242691110/posts', -> "me"
             div '#post.media-grid', ->
 
-          div '.large.span16', ->
-            h3 '#code-title', -> a href:'http://github.com/daneodekirk', -> 'code'
+          div '.span16', ->
+            h3 '.large', -> a href:'http://github.com/daneodekirk', -> 'code'
             div '#code.row', ->
 
       footer ".footer", ->
