@@ -25,7 +25,7 @@
       });
       return container.addClass('loaded');
     });
-    socket = io.connect('http://localhost');
+    socket = io.connect('/');
     socket.on('clear', function() {
       return $('#gallery, #post, #code').empty();
     });

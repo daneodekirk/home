@@ -28,7 +28,7 @@ LazyLoad.load [
 
 
     #socket.io
-    socket = io.connect 'http://localhost'
+    socket = io.connect '/'
     socket.on 'clear', -> $('#gallery, #post, #code').empty()
     socket.on 'painting', (data) -> $('#gallery').append(data).imagesLoaded (images)-> $(images).parent().fadeIn 900
     socket.on 'post', (data) -> $('#post').append(data).children().fadeIn 900
