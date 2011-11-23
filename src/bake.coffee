@@ -10,9 +10,6 @@ io.set 'log level', 1
 url = require 'url'
 request = require 'request'
 
-NodeCache = require 'node-cache'
-feedcache = new NodeCache()
-
 ONEWEEK = 2629743000
 STATIC = "#{process.cwd()}/app/public"
 

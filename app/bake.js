@@ -1,5 +1,5 @@
 (function() {
-  var NodeCache, ONEWEEK, STATIC, app, ck, day, express, feedcache, fs, githubify, gpluscontent, gplusimage, io, picasify, port, request, socket, url;
+  var ONEWEEK, STATIC, app, ck, day, express, fs, githubify, gpluscontent, gplusimage, io, picasify, port, request, socket, url;
   ck = require('coffeekup');
   express = require('express');
   app = express.createServer();
@@ -9,8 +9,6 @@
   io.set('log level', 1);
   url = require('url');
   request = require('request');
-  NodeCache = require('node-cache');
-  feedcache = new NodeCache();
   ONEWEEK = 2629743000;
   STATIC = "" + (process.cwd()) + "/app/public";
   app.configure(function() {
