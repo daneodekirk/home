@@ -87,11 +87,8 @@
   io.sockets.on('connection', function(socket) {
     socket.emit('clear');
     url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
-    console.log('requesting picasaweb');
     request(url, function(err, data, body) {
       var entry, json, _i, _len, _ref, _results;
-      console.log('reqeust complete');
-      console.log(err);
       json = JSON.parse(body);
       _ref = json.feed.entry;
       _results = [];
