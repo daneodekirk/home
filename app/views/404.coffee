@@ -17,24 +17,12 @@ html ->
       section ->
         div '.name.page-header', ->
           h1 'dane odekirk'
-      section '#main', ->
+      section '#main', style:'min-height:105px;', ->
         div '.row', ->
           div '#art.span16', ->
-            h3 '.large', -> "#{yield -> a href:'https://plus.google.com/u/0/photos/114871092135242691110/albums/5668708009304041265', -> 'canvas'}"
-            div '#gallery.media-grid', ->
-
-          div '#me.span16', ->
-            h3 '.large', -> a href:'https://plus.google.com/u/0/114871092135242691110/posts', -> "me"
-            div '#post.media-grid', ->
-
-          div '.span16', ->
-            h3 '.large', -> a href:'http://github.com/daneodekirk', -> 'code'
-            div '#code.row', ->
+            h3 '.large', -> "#{yield -> a href:'/', -> '404'}"
 
       footer ".footer", ->
         div '.container', ->
           span '#help-out', -> "built and designed by Dane Odekirk. help out at #{ yield -> a href:'https://github.com/daneodekirk', -> 'github' }"
           span '.pull-right', -> 'put something interesting here'
-
-    script src:'https://s3.amazonaws.com/odekirk/lazyload.min.js'
-    script src:'app.js'

@@ -22,6 +22,7 @@ app.configure ()->
   app.set 'view engine', 'coffee'
   app.register '.coffee', require('coffeekup').adapters.express
 
+  app.use express.favicon "#{STATIC}/favicon.ico", { maxAge: 0 }
   app.use express.static "#{STATIC}", { maxAge: ONEWEEK }, { test:'foobar'}
   app.use express.errorHandler()
   app.use express.compiler { src:"#{STATIC}", enable:['less'] }
@@ -31,6 +32,7 @@ app.configure ()->
     next()
 
 app.get '/', (req, res) -> res.render 'index'
+app.get '*', (req, res) -> res.render '404'
 
 picasify = (url, size) ->
   parts = url.split '/'

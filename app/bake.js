@@ -20,6 +20,9 @@
     });
     app.set('view engine', 'coffee');
     app.register('.coffee', require('coffeekup').adapters.express);
+    app.use(express.favicon("" + STATIC + "/favicon.ico", {
+      maxAge: 0
+    }));
     app.use(express.static("" + STATIC, {
       maxAge: ONEWEEK
     }, {
@@ -37,6 +40,9 @@
   });
   app.get('/', function(req, res) {
     return res.render('index');
+  });
+  app.get('*', function(req, res) {
+    return res.render('404');
   });
   picasify = function(url, size) {
     var new_url, parts;
