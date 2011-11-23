@@ -131,6 +131,7 @@
         _results.push(request(url, function(err, data, body) {
           var index, item, _len, _results2;
           repo = this.uri.pathname.split('/').slice(-2, -1);
+          owner = this.uri.pathname.split('/').slice(-3, -2);
           json = JSON.parse(body);
           _results2 = [];
           for (index = 0, _len = json.length; index < _len; index++) {

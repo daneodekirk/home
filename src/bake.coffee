@@ -99,7 +99,8 @@ io.sockets.on 'connection', (socket) ->
     for repo,owner of repos
       url = "https://api.github.com/repos/#{owner}/#{repo}/commits"
       request url, (err, data, body) ->
-        repo = @uri.pathname.split('/')[-2..-2]
+        repo  = @uri.pathname.split('/')[-2..-2]
+        owner = @uri.pathname.split('/')[-3..-3]
         json = JSON.parse body
         (socket.emit('commits', repo:repo, html:"""
           <span style="display:none">
