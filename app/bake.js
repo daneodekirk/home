@@ -44,7 +44,10 @@
     return res.render('index');
   });
   app.get('*', function(req, res) {
-    return res.render('404');
+    return res.render('404', {
+      status: 404,
+      url: req.url
+    });
   });
   picasify = function(url, size) {
     var new_url, parts;

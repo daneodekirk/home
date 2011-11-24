@@ -8,7 +8,7 @@ html ->
       script src: 'http://html5shim.googlecode.com/svn/trunk/html5.js', type:'text/javascript'
     
     link rel: 'stylesheet', href: 'https://s3.amazonaws.com/odekirk/bootstrap.1.4.0.css'
-    link rel: 'stylesheet', href: 'app.css'
+    link rel: 'stylesheet', href: '/app.css'
 
   body ->
     div '.container', ->

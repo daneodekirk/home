@@ -32,7 +32,7 @@ app.configure ()->
     next()
 
 app.get '/', (req, res) -> res.render 'index'
-app.get '*', (req, res) -> res.render '404'
+app.get '*', (req, res) -> res.render '404', status:404, url:req.url
 
 picasify = (url, size) ->
   parts = url.split '/'

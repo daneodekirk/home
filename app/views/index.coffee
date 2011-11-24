@@ -3,8 +3,11 @@ html ->
   head ->
     meta charset: 'utf-8'
     meta name:'viewport', content:'width=device-width'
-    title -> 'Dane Odekirk'
-    ie 'lt IE9', ->
+    meta
+      name:'description',
+      content:'Paints in Seattle. Codes for UW Marketing. Studies physics at the University of Washington.'
+    title 'Dane Odekirk'
+    ie 'lt IE 9', ->
       script src: 'http://html5shim.googlecode.com/svn/trunk/html5.js', type:'text/javascript'
     
     link rel: 'stylesheet', href: 'https://s3.amazonaws.com/odekirk/bootstrap.1.4.0.css'
