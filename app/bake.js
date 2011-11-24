@@ -36,6 +36,11 @@
       enable: ['less']
     }));
     return app.use(function(req, res, next) {
+      var host;
+      host = req.headers.host;
+      if (!!~host.indexOf('www.')) {
+        return res.redirect("http://" + (host.replace('www.', '')) + req.url);
+      }
       res.header('Vary', 'Accept-Encoding');
       return next();
     });

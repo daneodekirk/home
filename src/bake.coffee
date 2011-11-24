@@ -28,6 +28,8 @@ app.configure ()->
   app.use express.compiler { src:"#{STATIC}", enable:['less'] }
 
   app.use (req,res,next) ->
+    host = req.headers.host
+    return res.redirect "http://#{host.replace 'www.', ''}#{req.url}" if !!~ host.indexOf 'www.'
     res.header 'Vary', 'Accept-Encoding'
     next()
 
