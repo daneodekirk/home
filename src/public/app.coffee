@@ -9,6 +9,7 @@ LazyLoad.load [
       canvas = $('#gallery')
       big = $('#overlay')
       container = $('.container')
+      current_width = $(window).width()
 
       canvas.delegate 'a', 'click', () ->
         container.addClass 'large'
@@ -25,10 +26,25 @@ LazyLoad.load [
         return false
 
       container.addClass 'loaded'
+      container.addClass 'landscape' if window.orientation % 180
 
+      $(window).bind 'resize orientationchange', () -> 
+        when 'resize'
+          if $(this).width() < 960 and current_width > 960 
+            socket.emit 'width', 'mobile'
+            current_width = $(this).width()
+          if $(this).width() >= 960 and current_width < 960 
+            socket.emit 'width', 'desktop'
+            current_width = $(this).width()
+        when 'orientationchange'
+          socket.emit 'width', "mobile#{window.orientation}"
+          container.removeClass('landscape')
+          container.addClass 'landscape' if window.orientation % 180
 
     #socket.io
+    window.orientation = 'none'
     socket = io.connect '/'
+    socket.emit 'width', if $(window).width() < 960 then "mobile-#{window.orientation}" else "desktop"
     socket.on 'clear', -> $('#gallery, #post, #code').empty()
     socket.on 'painting', (data) -> $('#gallery').append(data).imagesLoaded (images)-> $(images).parent().fadeIn 900
     socket.on 'post', (data) -> $('#post').append(data).children().fadeIn 900

@@ -2,12 +2,13 @@
   LazyLoad.load(['https://s3.amazonaws.com/odekirk/socket.io.js', 'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js', 'https://s3.amazonaws.com/odekirk/imagesloaded.jquery.min.js'], function() {
     var socket;
     jQuery(function($) {
-      var art, big, canvas, close, container;
+      var art, big, canvas, close, container, current_width;
       close = $('a.close');
       art = $('#art');
       canvas = $('#gallery');
       big = $('#overlay');
       container = $('.container');
+      current_width = $(window).width();
       canvas.delegate('a', 'click', function() {
         var src;
         container.addClass('large');
@@ -23,9 +24,31 @@
         big.height(0);
         return false;
       });
-      return container.addClass('loaded');
+      container.addClass('loaded');
+      if (window.orientation % 180) {
+        container.addClass('landscape');
+      }
+      $(window).resize(function() {
+        if ($(this).width() < 960 && current_width > 960) {
+          socket.emit('width', 'mobile');
+          current_width = $(this).width();
+        }
+        if ($(this).width() >= 960 && current_width < 960) {
+          socket.emit('width', 'desktop');
+          return current_width = $(this).width();
+        }
+      });
+      return $(window).bind('orientationchange', function() {
+        socket.emit('width', "mobile" + window.orientation);
+        container.removeClass('landscape');
+        if (window.orientation % 180) {
+          return container.addClass('landscape');
+        }
+      });
     });
+    window.orientation = 'none';
     socket = io.connect('/');
+    socket.emit('width', $(window).width() < 960 ? "mobile-" + window.orientation : "desktop");
     socket.on('clear', function() {
       return $('#gallery, #post, #code').empty();
     });

@@ -167,11 +167,37 @@ h3.large a:hover {
 /** devices **/
 
 @media (max-width: 960px) {
+  h3.large a {
+    font-size:120px;
+  }
   .container {
     width: 310px;
+    overflow:hidden;
   }
   .span-one-third {
     clear:both;
+  }
+  #art, #me {
+    width:310px;
+  }
+  #gallery span, #post span {
+    width:70px;
+    height:70px;
+  }
+  #gallery p, #post p {
+    font-size:20px;
+    line-height:20px;
+    bottom:-7px;
+  }
+
+  .landscape #gallery span, .landscape #post span {
+    width:120px;
+    height:120px;
+  }
+  .landscape #gallery p, .landscape  #post p {
+    font-size:30px;
+    line-height:30px;
+    bottom:-7px;
   }
   #help-out {
     width:240px;
