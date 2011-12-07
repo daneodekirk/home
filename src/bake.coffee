@@ -36,13 +36,6 @@ app.configure ()->
 app.get '/', (req, res) -> res.render 'index'
 app.get '*', (req, res) -> res.render '404', status:404, url:req.url
 
-picasify = (url, size) ->
-  parts = url.split '/'
-  parts[parts.length - 1] = "#{size}/"
-  new_url = parts.join('/')
-  new_url += '?sz=40' if size is 's40-c'
-  return new_url
-
 githubify = (repo) ->
   return repo.payload.shas[0][2] if repo.type is 'PushEvent'
   return "#{repo.repository.name} forked!" if repo.type is 'ForkEvent'
@@ -75,12 +68,12 @@ io.sockets.on 'connection', (socket) ->
       
     socket.emit 'clear'
 
-    url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json'
+    url = "https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?thumbsize=#{size.large}&alt=json"
     request url, (err, data, body) ->
       json = JSON.parse body
       socket.emit 'painting', """
-        <a style='display:none' data-lrg='#{picasify(entry.content.src, "h#{size.large}")}'>
-          <img class='thumbnail' style='' src="#{picasify(entry.content.src, "s#{size.small}-c")}" />
+        <a style='display:none' data-lrg="#{entry.media$group.media$thumbnail[0].url.replace("s#{size.large}","h#{size.large}")}">
+          <img class='thumbnail' style='' src="#{entry.content.src}?sz=#{size.small}" />
           <span><p>#{entry.summary.$t}</p></span>
         </a>
       """ for entry in json.feed.entry

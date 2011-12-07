@@ -1,5 +1,5 @@
 (function() {
-  var ONEWEEK, STATIC, app, ck, day, express, fs, githubify, gpluscontent, gplusimage, io, picasify, port, request, socket, url;
+  var ONEWEEK, STATIC, app, ck, day, express, fs, githubify, gpluscontent, gplusimage, io, port, request, socket, url;
   ck = require('coffeekup');
   express = require('express');
   app = express.createServer();
@@ -54,16 +54,6 @@
       url: req.url
     });
   });
-  picasify = function(url, size) {
-    var new_url, parts;
-    parts = url.split('/');
-    parts[parts.length - 1] = "" + size + "/";
-    new_url = parts.join('/');
-    if (size === 's40-c') {
-      new_url += '?sz=40';
-    }
-    return new_url;
-  };
   githubify = function(repo) {
     if (repo.type === 'PushEvent') {
       return repo.payload.shas[0][2];
@@ -110,7 +100,7 @@
         };
       }
       socket.emit('clear');
-      url = 'https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?alt=json';
+      url = "https://picasaweb.google.com/data/feed/api/user/114871092135242691110/albumid/5668708009304041265?thumbsize=" + size.large + "&alt=json";
       request(url, function(err, data, body) {
         var entry, json, _i, _len, _ref, _results;
         json = JSON.parse(body);
@@ -118,7 +108,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           entry = _ref[_i];
-          _results.push(socket.emit('painting', "<a style='display:none' data-lrg='" + (picasify(entry.content.src, "h" + size.large)) + "'>\n  <img class='thumbnail' style='' src=\"" + (picasify(entry.content.src, "s" + size.small + "-c")) + "\" />\n  <span><p>" + entry.summary.$t + "</p></span>\n</a>"));
+          _results.push(socket.emit('painting', "<a style='display:none' data-lrg=\"" + (entry.media$group.media$thumbnail[0].url.replace("s" + size.large, "h" + size.large)) + "\">\n  <img class='thumbnail' style='' src=\"" + entry.content.src + "?sz=" + size.small + "\" />\n  <span><p>" + entry.summary.$t + "</p></span>\n</a>"));
         }
         return _results;
       });
