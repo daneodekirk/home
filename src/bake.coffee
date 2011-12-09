@@ -47,7 +47,8 @@ day = (time) ->
   "#{times[0]} at #{times[1]}"
 
 gplusimage = (attachments, size) ->
-  return "#{attachments[0].fullImage.url.replace('s0-d/', '')}?sz=#{size}" if attachments[0]
+  image = if attachments[0].objectType is 'photo' then attachments[0] else attachments[1]
+  "#{image.fullImage.url.replace('s0-d/', '')}?sz=#{size}" if attachments[0]
 
 gpluscontent = (item) ->
   return "Checked in at #{item.placeName}" if item.verb is 'checkin'
@@ -61,9 +62,9 @@ io.sockets.on 'connection', (socket) ->
 
     #size = if 'mobile' in device then large:200, small:70 else large:390, small:200
 
-    if !!~ device.indexOf 'mobile' 
+    if !!~ device.indexOf 'mobile'
       size = if !!~ device.indexOf '90' then large:200, small:120 else large:390, small:70
-    else 
+    else
       size = large:390, small:200
       
     socket.emit 'clear'

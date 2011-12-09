@@ -72,8 +72,10 @@
     return "" + times[0] + " at " + times[1];
   };
   gplusimage = function(attachments, size) {
+    var image;
+    image = attachments[0].objectType === 'photo' ? attachments[0] : attachments[1];
     if (attachments[0]) {
-      return "" + (attachments[0].fullImage.url.replace('s0-d/', '')) + "?sz=" + size;
+      return "" + (image.fullImage.url.replace('s0-d/', '')) + "?sz=" + size;
     }
   };
   gpluscontent = function(item) {
